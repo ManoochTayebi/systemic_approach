@@ -1,0 +1,90 @@
+################################################################################
+###                                                                          ###
+### Created by Mahdi Manoochertayebi 2025-2026                               ###
+###                                                                          ###
+################################################################################
+
+import numpy as np
+from scipy.integrate import solve_ivp
+import matplotlib.pyplot as plt
+
+################################################################################
+
+class RecruitmentModel:
+    def __init__(self, r_s, r_m, r_nr, r_ref, r_ak, r_akneg, r_k, r_kneg, r_r1, r_r2neg, r_r2, r_r3neg, r_p, r_pref, r_c, sourcing_rate=60, time_span=(0, 53), time_steps=100):
+        self.sourcing_rate = sourcing_rate
+        self.time_span = time_span
+        self.t_eval = np.linspace(time_span[0], time_span[1], time_steps)
+        
+        # Define process rates
+        self.r_s = r_s
+        self.r_m = r_m
+        self.r_nr = r_nr
+        self.r_ref = r_ref
+        self.r_ak = r_ak  
+        self.r_akneg = r_akneg
+        self.r_k = r_k  
+        self.r_kneg = r_kneg
+        self.r_r1 = r_r1
+        self.r_r2neg = r_r2neg 
+        self.r_r2 = r_r2   
+        self.r_r3neg = r_r3neg 
+        self.r_p = r_p  
+        self.r_pref = r_pref
+        self.r_c = r_c 
+
+    def sourcing_function(self, t):
+        # return self.sourcing_rate * (1 + 0.5 * np.sin(2 * np.pi * t / 30))
+        return self.sourcing_rate
+
+    def recruitment_process(self, t, y):
+        S, M, AK, K, R1, R2, P, C = y
+        f_s = self.sourcing_function(t)
+        
+        dS_dt = f_s - self.r_s * S - self.r_m * S
+        dM_dt = self.r_m * S - self.r_nr * M - self.r_ref * M - self.r_ak * M
+        dAK_dt = self.r_ak * M - self.r_akneg * AK - self.r_k * AK
+        dK_dt = self.r_k * AK - self.r_kneg * K - self.r_r1 * K
+        dR1_dt = self.r_r1 * K - self.r_r2neg * R1 - self.r_r2 * R1
+        dR2_dt = self.r_r2 * R1 - self.r_r3neg * R2 - self.r_p * R2
+        dP_dt = self.r_p * R2 - self.r_pref * P - self.r_c * P
+        dC_dt = self.r_c * P
+        
+        return [dS_dt, dM_dt, dAK_dt, dK_dt, dR1_dt, dR2_dt, dP_dt, dC_dt]
+
+    def run_simulation(self):
+        y0 = [10, 0, 0, 0, 0, 0, 0, 0]
+        sol = solve_ivp(self.recruitment_process, self.time_span, y0, t_eval=self.t_eval)
+        return sol
+
+    def plot_results(self, sol):
+        plt.figure(figsize=(10,6))
+        labels = ["Sourcé", "Messaged", "AKLIFé", "KLIF", "RDV1", "RDV1", "Proposal", "Consultants"]
+        for i in range(len(sol.y)):
+            plt.plot(sol.t, sol.y[i], label=labels[i])
+        plt.xlabel("Time (weeks)")
+        plt.ylabel("Number of candidates")
+        plt.legend()
+        plt.title("Recruitment Process Simulation")
+        plt.grid()
+        plt.show()
+
+        plt.figure(figsize=(10,6))
+        plt.plot(sol.t, sol.y[0], label="Sourcing", linestyle='dashed')
+        plt.plot(sol.t, sol.y[7], label="Consultants Accepted", linewidth=2)
+        plt.xlabel("Time (weeks)")
+        plt.ylabel("Number of candidates")
+        plt.legend()
+        plt.title("Sourcing vs. Consultants Accepted")
+        plt.grid()
+        plt.show()
+
+        # Plot the sourcing function over time
+        plt.figure(figsize=(10,6))
+        plt.plot(self.t_eval, [self.sourcing_function(t) for t in self.t_eval], label="Sourcing Function f_s(t)", color='purple')
+        plt.xlabel("Time (weeks)")
+        plt.ylabel("Sourcing Rate")
+        plt.legend()
+        plt.title("Sourcing Function Over Time")
+        plt.grid()
+        plt.show()

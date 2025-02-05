@@ -1,0 +1,30 @@
+Collecting phase:
+Imputs are sourced at a rate of 100 per time unit.
+20% are not retained .
+90% move to the business phase.  
+
+Business phase:
+Imputs receive messages, with different response rates:
+70% do not respond .
+20% are rejected .
+10% accept and move to School phase.  
+
+School phase:
+30% fail the School .
+70% pass to First chat.  
+
+First chat:
+50% are rejected at this stage .
+50% move to the second chat .
+
+Second chat:
+10% get rejected.
+90% proceed to the third interview .
+
+Third chat :
+90% are rejected .
+10% receive a prize.
+
+prize (P):
+20% reject the prize .
+80% accept and become consultants .
