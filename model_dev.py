@@ -50,7 +50,7 @@ def generate_python_script(department):
     llm = OllamaLLM(
         model=local_llm,
         base_url=base_url,
-        temperature=0.9,
+        temperature=0.5,
         top_p=0.9
     )
 
@@ -79,7 +79,7 @@ def generate_python_script(department):
         "Use the variables and parameters based on the values mentioned in the report.\n\n"
         "Make sure all the variables and equations are correctly defined and the code is executable.\n\n"
         "If you can't find a variable, form the txt file and it is missing for the equations, you may use a random but conservative value for it.\n\n"
-        # "Just write the python script and don't add any extra text to it.\n\n"
+        "Just write the python script and don't add any extra text to it.\n\n"
         # "Make sure that the input of the function system_of_equations(self, t, state) having the right order of the variables so that solve_ivp can run properly."
     )
 

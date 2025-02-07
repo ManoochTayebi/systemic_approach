@@ -1,30 +1,51 @@
-Collecting phase:
-Imputs are sourced at a rate of 100 per time unit.
-20% are not retained .
-90% move to the business phase.  
+**Sourcing**
+- Temps approximatif consacré par semaine : les 5 matins
+- Durée d’un évènement : Non spécifiée
+- Rendement : 10 à 20 candidats sélectionnés
+- Discussion d’éléments qualitatifs :
+  - Profils recruteurs complémentaires répartis avec des Account Teams distinctes.
+  - Possibilité de chevauchement des candidats sélectionnés.
 
-Business phase:
-Imputs receive messages, with different response rates:
-70% do not respond .
-20% are rejected .
-10% accept and move to School phase.  
+**Message**
+- Temps approximatif consacré par semaine : Non connu
+- Durée d’un évènement : Non spécifiée
+- Rendement :
+  - LinkedIn : 20,8% de taux de réponses et 9,7% à 11% de taux d’acceptation.
+  - HelloWork : Meilleur taux de réponse et acceptation.
+- Discussion d’éléments qualitatifs :
+  - Inmailing souvent concomitant du Sourcing.
 
-School phase:
-30% fail the School .
-70% pass to First chat.  
+**KLIF**
+- Temps approximatif consacré par semaine : 5 à 6 KLIF/semaine (1h30)
+- Durée d’un évènement : 10 à 15 minutes
+- Rendement : 84% ou 100% de taux de KLIF validé
+- Discussion d’éléments qualitatifs :
+  - Éléments discriminants recensés : qualité d’élocution, souhaits du candidat, prétention salariale, compétences.
 
-First chat:
-50% are rejected at this stage .
-50% move to the second chat .
+**RDV1**
+- Temps approximatif consacré par semaine : les après-midis
+- Durée d’un évènement : 45 à 60 minutes
+- Rendement : 40% de taux de transformation
+- Discussion d’éléments qualitatifs :
+  - Qualification des hardskills et softskills.
 
-Second chat:
-10% get rejected.
-90% proceed to the third interview .
+**RDV2**
+- Temps approximatif consacré par semaine : les après-midis
+- Durée d’un évènement : 45 à 60 minutes
+- Rendement : 100%
+- Discussion d’éléments qualitatifs :
+  - Consolidation des CR RDV1 et 2 avec ChatGCP.
 
-Third chat :
-90% are rejected .
-10% receive a prize.
+**RDV3**
+- Temps approximatif consacré par semaine : les après-midis
+- Durée d’un évènement : 45 à 60 minutes
+- Rendement : 50%
+- Discussion d’éléments qualitatifs :
+  - Identification des points restants à explorer pour qualifier le candidat.
 
-prize (P):
-20% reject the prize .
-80% accept and become consultants .
+**Proposition envoyée**
+- Temps approximatif consacré par semaine : Non connu
+- Durée d’un évènement : Non connue
+- Rendement : Non communiqué mais KPI existant
+- Discussion d’éléments qualitatifs :
+  - Transmission RH, sort du périmètre de recrutement.
