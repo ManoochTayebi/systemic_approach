@@ -7,6 +7,7 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
+import networkx as nx
 
 ################################################################################
 
@@ -16,25 +17,24 @@ class RecruitmentModel:
         self.time_span = time_span
         self.t_eval = np.linspace(time_span[0], time_span[1], time_steps)
         
-        # Define process rates
-        self.r_s = r_s
-        self.r_m = r_m
-        self.r_nr = r_nr
-        self.r_ref = r_ref
-        self.r_ak = r_ak  
-        self.r_akneg = r_akneg
-        self.r_k = r_k  
-        self.r_kneg = r_kneg
-        self.r_r1 = r_r1
-        self.r_r2neg = r_r2neg 
-        self.r_r2 = r_r2   
-        self.r_r3neg = r_r3neg 
-        self.r_p = r_p  
-        self.r_pref = r_pref
-        self.r_c = r_c 
+        # Process rates
+        self.r_s = r_s      # Non retenu
+        self.r_m = r_m      # Message envoyé
+        self.r_nr = r_nr    # Pas de retour
+        self.r_ref = r_ref  # Rejeté
+        self.r_ak = r_ak    # Réponse acceptée
+        self.r_akneg = r_akneg  # AKLIF négatif
+        self.r_k = r_k      # KLIF positif
+        self.r_kneg = r_kneg  # RDV1 rejeté
+        self.r_r1 = r_r1    # RDV1 positif
+        self.r_r2neg = r_r2neg  # RDV2 négatif
+        self.r_r2 = r_r2    # RDV2 positif
+        self.r_r3neg = r_r3neg  # RDV3 négatif
+        self.r_p = r_p      # Passe en proposition
+        self.r_pref = r_pref  # Proposition rejetée
+        self.r_c = r_c      # Accepté
 
     def sourcing_function(self, t):
-        # return self.sourcing_rate * (1 + 0.5 * np.sin(2 * np.pi * t / 30))
         return self.sourcing_rate
 
     def recruitment_process(self, t, y):
@@ -59,7 +59,7 @@ class RecruitmentModel:
 
     def plot_results(self, sol):
         plt.figure(figsize=(10,6))
-        labels = ["Sourcé", "Messaged", "AKLIFé", "KLIF", "RDV1", "RDV1", "Proposal", "Consultants"]
+        labels = ["Sourcé", "Messaged", "AKLIFé", "KLIF", "RDV1", "RDV2", "Proposal", "Consultants"]
         for i in range(len(sol.y)):
             plt.plot(sol.t, sol.y[i], label=labels[i])
         plt.xlabel("Time (weeks)")
@@ -69,60 +69,71 @@ class RecruitmentModel:
         plt.grid()
         plt.show()
 
-        plt.figure(figsize=(10,6))
-        plt.plot(sol.t, sol.y[0], label="Sourcing", linestyle='dashed')
-        plt.plot(sol.t, sol.y[7], label="Consultants Accepted", linewidth=2)
-        plt.xlabel("Time (weeks)")
-        plt.ylabel("Number of candidates")
-        plt.legend()
-        plt.title("Sourcing vs. Consultants Accepted")
-        plt.grid()
-        plt.show()
+    def plot_causal_loop_diagram(self):
+        G = nx.DiGraph()
 
-        # Plot the sourcing function over time
-        plt.figure(figsize=(10,6))
-        plt.plot(self.t_eval, [self.sourcing_function(t) for t in self.t_eval], label="Sourcing Function f_s(t)", color='purple')
-        plt.xlabel("Time (weeks)")
-        plt.ylabel("Sourcing Rate")
-        plt.legend()
-        plt.title("Sourcing Function Over Time")
-        plt.grid()
-        plt.show()
+        # Define nodes
+        nodes = [
+            "Sourcing (f_s)", "Sourcé", "Messaged", "AKLIFé", "KLIF", "RDV1", "RDV2", "Proposal", "Consultants",
+            "Non retenu", "Pas de retour", "Rejeté", "AKLIF négatif", "RDV1 rejeté", "RDV2 négatif", "RDV3 négatif", "Proposition rejetée"
+        ]
+        G.add_nodes_from(nodes)
 
-# Define process rates
-r_s = 0.1  # Non retenu
-r_m = 0.9  # Message envoyé
-r_nr = 0.8  # Pas de retour
-r_ref = 0.1  # Rejeté
-r_ak = 0.1  # Reponse accepté
-r_akneg = 0.2  # KLIF negatif
-r_k = 0.8  # KLIF positif
-r_kneg = 0.6  # RDV1 rejected
-r_r1 = 0.4  # RDV1 positif
-r_r2neg = 0.1  # RDV2 negatif
-r_r2 = 0.9  # RDV2 positif
-r_r3neg = 0.5  # RDV3 negatif
-r_p = 0.5  # Moves to Proposal
-r_pref = 0.2  # Proposal rejected
-r_c = 0.8  # Accepted
+        # Define edges with process rates
+        edges = [
+            ("Sourcing (f_s)", "Sourcé", "f_s"),  
+            ("Sourcé", "Messaged", f"r_m = {self.r_m}"),  
+            ("Sourcé", "Non retenu", f"r_s = {self.r_s}"),  
+            ("Messaged", "Pas de retour", f"r_nr = {self.r_nr}"),  
+            ("Messaged", "Rejeté", f"r_ref = {self.r_ref}"),  
+            ("Messaged", "AKLIFé", f"r_ak = {self.r_ak}"),  
+            ("AKLIFé", "AKLIF négatif", f"r_akneg = {self.r_akneg}"),  
+            ("AKLIFé", "KLIF", f"r_k = {self.r_k}"),  
+            ("KLIF", "RDV1", f"r_r1 = {self.r_r1}"),  
+            ("KLIF", "RDV1 rejeté", f"r_kneg = {self.r_kneg}"),  
+            ("RDV1", "RDV2", f"r_r2 = {self.r_r2}"),  
+            ("RDV1", "RDV2 négatif", f"r_r2neg = {self.r_r2neg}"),  
+            ("RDV2", "Proposal", f"r_p = {self.r_p}"),  
+            ("RDV2", "RDV3 négatif", f"r_r3neg = {self.r_r3neg}"),  
+            ("Proposal", "Consultants", f"r_c = {self.r_c}"),  
+            ("Proposal", "Proposition rejetée", f"r_pref = {self.r_pref}")
+        ]
+
+        G.add_edges_from([(u, v) for u, v, _ in edges])
+
+        # Define layout (aligned positioning)
+        pos = {
+            "Sourcing (f_s)": (-1, 2),
+            "Sourcé": (0, 2),
+            "Messaged": (1, 2),
+            "AKLIFé": (2, 2),
+            "KLIF": (3, 2),
+            "RDV1": (4, 2),
+            "RDV2": (5, 2),
+            "Proposal": (6, 2),
+            "Consultants": (7, 2),
+            "Non retenu": (0, 1),
+            "Pas de retour": (1, 1),
+            "Rejeté": (1, 0),
+            "AKLIF négatif": (2, 1),
+            "RDV1 rejeté": (3, 1),
+            "RDV2 négatif": (4, 1),
+            "RDV3 négatif": (5, 1),
+            "Proposition rejetée": (6, 1),
+        }
+
+        plt.figure(figsize=(16, 8))
+        nx.draw(G, pos, with_labels=True, node_color="lightgreen", node_size=3500, font_size=10, font_weight="bold", edge_color="gray", arrowsize=20, connectionstyle="arc3,rad=0.1")
+
+        # Add edge labels (process rates)
+        edge_labels = {(u, v): label for u, v, label in edges}
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=10)
+
+        plt.title("Causal Loop Diagram of Recruitment Process (with Sourcing f_s)")
+        plt.show()
 
 if __name__ == "__main__":
-    model = RecruitmentModel(
-        r_s = r_s, 
-        r_m = r_m, 
-        r_nr = r_nr,  
-        r_ref = r_ref,  
-        r_ak = r_ak,  
-        r_akneg = r_akneg, 
-        r_k = r_k,  
-        r_kneg = r_kneg, 
-        r_r1 = r_r1,  
-        r_r2neg = r_r2neg,
-        r_r2 = r_r2,
-        r_r3neg = r_r3neg,
-        r_p = r_p,  
-        r_pref = r_pref,  
-        r_c = r_c  
-    )
+    model = RecruitmentModel(0.1, 0.9, 0.8, 0.1, 0.1, 0.2, 0.8, 0.6, 0.4, 0.1, 0.9, 0.5, 0.5, 0.2, 0.8)
     solution = model.run_simulation()
     model.plot_results(solution)
+    model.plot_causal_loop_diagram()

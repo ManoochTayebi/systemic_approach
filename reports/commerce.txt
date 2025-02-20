@@ -1,51 +1,28 @@
-**Sourcing**
-- Temps approximatif consacré par semaine : les 5 matins
-- Durée d’un évènement : Non spécifiée
-- Rendement : 10 à 20 candidats sélectionnés
-- Discussion d’éléments qualitatifs :
-  - Profils recruteurs complémentaires répartis avec des Account Teams distinctes.
-  - Possibilité de chevauchement des candidats sélectionnés.
+Run the simulaiton of 53 time units (weeks)
 
-**Message**
-- Temps approximatif consacré par semaine : Non connu
-- Durée d’un évènement : Non spécifiée
-- Rendement :
-  - LinkedIn : 20,8% de taux de réponses et 9,7% à 11% de taux d’acceptation.
-  - HelloWork : Meilleur taux de réponse et acceptation.
-- Discussion d’éléments qualitatifs :
-  - Inmailing souvent concomitant du Sourcing.
+1. Stock AO:
+It has the initital value of 0.
+A flow of 13/week are entered in Stock AO.
+Rate of 10/13 are selectioned a  moved to the next step which is Opportunités.
+And the remaing (1 - 10/13) are not remained.
 
-**KLIF**
-- Temps approximatif consacré par semaine : 5 à 6 KLIF/semaine (1h30)
-- Durée d’un évènement : 10 à 15 minutes
-- Rendement : 84% ou 100% de taux de KLIF validé
-- Discussion d’éléments qualitatifs :
-  - Éléments discriminants recensés : qualité d’élocution, souhaits du candidat, prétention salariale, compétences.
+2. Opportunités
+It has the initital value of 0.
+One flows enter Opportunités from Stock AO.
+another flow of 2.5/week are entered Opportunités.
+Rate of 0.85 of the Opportunités are moved to Candidats positionnés and the rest go out as Opportunités perdues.
 
-**RDV1**
-- Temps approximatif consacré par semaine : les après-midis
-- Durée d’un évènement : 45 à 60 minutes
-- Rendement : 40% de taux de transformation
-- Discussion d’éléments qualitatifs :
-  - Qualification des hardskills et softskills.
+3. Candidats positionnés
+It has the initital value of 0.
+A flow enters Candidats positionnés from Opportunités.
+30% of Candidats positionnés go to the next step and presented to the clients and the remaining are ignored.
 
-**RDV2**
-- Temps approximatif consacré par semaine : les après-midis
-- Durée d’un évènement : 45 à 60 minutes
-- Rendement : 100%
-- Discussion d’éléments qualitatifs :
-  - Consolidation des CR RDV1 et 2 avec ChatGCP.
+4. Presentation clients
+It has the initital value of 0.
+A flow enters Presentation clients from the Candidats positionnés.
+33% of Presentation clients move to Départ en mission and the remaining are rejected.
 
-**RDV3**
-- Temps approximatif consacré par semaine : les après-midis
-- Durée d’un évènement : 45 à 60 minutes
-- Rendement : 50%
-- Discussion d’éléments qualitatifs :
-  - Identification des points restants à explorer pour qualifier le candidat.
 
-**Proposition envoyée**
-- Temps approximatif consacré par semaine : Non connu
-- Durée d’un évènement : Non connue
-- Rendement : Non communiqué mais KPI existant
-- Discussion d’éléments qualitatifs :
-  - Transmission RH, sort du périmètre de recrutement.
+5. Départ en mission 
+It has the initital value of 0.
+A flow enters on Départ en mission with the rate of 0.33 from Presentation clients.

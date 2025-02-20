@@ -1,0 +1,11 @@
+- Consultant in INTER-CONTRAT:
+Number of consultant in INTER-CONTRAT has the initial value of 17
+The consultant how are hired in the Recruitement department, enteres the INTER_CONTRAT consultant.
+Anothether input flow, called "retour mission" comes to INTER_CONTRAT consultant from the consultant in MISSION with the rate of 1/140.
+A flow from INTER_CONTRAT consultant goes out to départ with a rate of 0.05.
+The rate of the consultants leaving from INTER-CONTRAT to MISSION, is equal to the rate of "Départ en mission" which is computed from the Commerce department.
+
+- Consultant in MISSION:
+Consultant in Mission has the initial value of 140.
+The consultant comes from INTER-CONTRAT consultant to MISSION with the rate of "Départ en mission" which is computed from the Commerce department.
+The consultant in MISSION goes to INTER-CONTRAT consultant with the flow rate of "retour mission".

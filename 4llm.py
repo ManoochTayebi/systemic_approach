@@ -124,7 +124,7 @@ def generate_equation_script(department):
         "Example equation-based script:\n"
         f"{example_eq_code}\n\n"
         f"Now, generate the Python script exactly similar to the {example_eq_code}, ensure correct variable definitions and equations based on {report_text}.\n\n"
-        "Don't write any extra code, just write the equations and variables."
+        "Don't write any extra code, just write the equations, variables, and intial values."
     )
     
     result = llm.invoke([SystemMessage(content=instruction), HumanMessage(content=user_prompt)])
@@ -140,6 +140,8 @@ def generate_department_script(department):
     example_path = os.path.join(approche_dir, "example.py")
     example_eq_path = os.path.join(approche_dir, "example_equation.py")
     output_path = os.path.join(approche_dir, f"{department}.py")
+    txt_path = os.path.join(reports_dir, f"{department}.txt")
+    txt_simulation_path = os.path.join(reports_dir, f"{department}_simulation.txt")
     
     if not os.path.exists(equation_path) or not os.path.exists(example_path):
         print("Error: Required files not found.")
@@ -148,11 +150,12 @@ def generate_department_script(department):
     equation_code = extract_text(equation_path)
     example_code = extract_text(example_path)
     example_eq_code = extract_text(example_eq_path)
+    report_text = extract_text(txt_path)
     
     llm = OllamaLLM(
         model="llama3.3:latest", 
         base_url="http://smart4lm.llm.solent.fr:11434/",
-        temperature=0.5,
+        temperature=0.45,
         top_p=0.9)
     instruction = (
         "You are an expert in Python software engineering. "
@@ -165,13 +168,67 @@ def generate_department_script(department):
         "Ensure that it is **executable, efficient, and follows best practices**.\n"
         f"Considering {example_eq_code} leading to {example_code}, generate a python script similar to {example_code}, where you change the equations and variables based on the variables and equations exist in {equation_code}.\n\n"
         "Use object-oriented programming principles where applicable.\n\n"
+        f"You may use {report_text} to complete the script.\n\n"
+        f"You may use the simulation parameteres mentioned {txt_simulation_path} to add neccessary functions and set the simulation parameters in the script.\n\n"
+        # f"Based on {equation_code}, add an additional function to construct a **causal loop diagram** using `networkx`.\n\n"
+        # "**Follow the structure of the provided example code to construct a **causal loop diagram** using `networkx`.**\n"
+        # "Ensure that:\n"
+        # "- Each phase is represented as a **node**\n"
+        # "- **Edges** represent the flow between nodes using process rates\n"
+        # "- Use `pos = {...}` to correctly align nodes in a visually structured way\n"
+        # "- Nodes are well-positioned, labeled, and proportionate to the diagram\n"
+        # "- The final diagram clearly represents the system's flow\n\n"
+        # "Plot an aligned casual loop diagram, consideirng all the input and out flows, and stocks, with aligned positioned nodes that exactly shows the equations.\n\n"
         "Don't write any extra text."
+
     )
     
     result = llm.invoke([SystemMessage(content=instruction), HumanMessage(content=user_prompt)])
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(result)
     print(f"Generated {output_path}")
+
+
+def plot_causal_loop_diagram(department):
+    """
+    Fourth LLM: Fixes potential errors in {department}.py
+    """
+    department_script_path = os.path.join(approche_dir, f"{department}.py")
+    example_path = os.path.join(approche_dir, "example.py")
+
+    if not os.path.exists(department_script_path):
+        print(f"Error: {department_script_path} not found.")
+        return
+    
+    department_code = extract_text(department_script_path)
+    example_code = extract_text(example_path)
+
+    llm = OllamaLLM(
+        model="llama3.3:latest", 
+        base_url="http://smart4lm.llm.solent.fr:11434/",
+        temperature=0.45, 
+        top_p=0.9)
+    
+    instruction = (
+        "You are an expert in python codeing and graphical visulization of python codes of system dynamics. "
+        "Your task is to look at a code of a dynamic system and create a graph for it. "
+    )
+    
+    user_prompt = (
+        f"Add a function to **{department}.py** to visulize the dynamic processes using `networkx`.\n\n"
+        f"Use {example_code} as an example.\n\n"
+        "Only return the complete code without extra explanation."
+    )
+
+
+    result = llm.invoke([SystemMessage(content=instruction), HumanMessage(content=user_prompt)])
+    
+    
+    with open(department_script_path, "w", encoding="utf-8") as f:
+        f.write(result)
+    
+    print(f"Graph added {department_script_path}")
+
 
 def correct_department_script(department):
     """
@@ -237,9 +294,10 @@ def run_department_script(department):
 
 def main():
     department = input("Enter the department name: ").strip()
-    # generate_simplified_text(department)
+    generate_simplified_text(department)
     generate_equation_script(department)
     generate_department_script(department)
+    plot_causal_loop_diagram(department)
     correct_department_script(department)
     run_department_script(department)
 
