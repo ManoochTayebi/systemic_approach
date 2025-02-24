@@ -94,7 +94,8 @@ class OrganizationApp(QMainWindow):
             file_path, _ = QFileDialog.getOpenFileName(self, "Select Report", "", "Text Files (*.txt)")
             if file_path:
                 file_label.setText(os.path.basename(file_path))
-                self.departments.append((department_name.text(), file_path))
+                # Append a tuple of (department name, report file path)
+                self.departments.append((department_name.text().strip(), file_path))
         
         file_upload_btn.clicked.connect(upload_file)
         
@@ -116,9 +117,9 @@ class OrganizationApp(QMainWindow):
         self.state_variable_layout.addWidget(state_variable_input)
     
     def run_simulation(self):
-        org_name = self.org_name_input.text()
-        duration = self.simulation_duration_input.text()
-        state_variables = [var.text() for var in self.state_variable_inputs if var.text()]
+        org_name = self.org_name_input.text().strip()
+        duration = self.simulation_duration_input.text().strip()
+        state_variables = [var.text().strip() for var in self.state_variable_inputs if var.text().strip()]
         
         if not org_name or not duration or not state_variables:
             QMessageBox.warning(self, "Error", "Please provide all required information.")
@@ -126,25 +127,48 @@ class OrganizationApp(QMainWindow):
         
         report_dir = os.path.join(os.getcwd(), "report")
         os.makedirs(report_dir, exist_ok=True)
-        simulation_file_path = os.path.join(report_dir, f"{org_name}_simulation.txt")
         
-        with open(simulation_file_path, "w") as file:
+        # Save simulation parameters in a separate file (if needed)
+        simulation_file_path = os.path.join(report_dir, f"{org_name}_simulation.txt")
+        with open(simulation_file_path, "w", encoding="utf-8") as file:
             file.write(f"Simulation parameters:\n- Run the simulation for {duration} time units (weeks)\n\n")
             file.write("Visualization parameters:\n")
             for var in state_variables:
                 file.write(f"- Plot the number of ({var}).\n")
-        
         print(f"Simulation parameters saved in {simulation_file_path}")
         
-        # generate_equation_script(org_name)
-        # generate_organization_equation_class(org_name)
-        # generate_organization_run(org_name)
-        # correct_organization_script(org_name)
-        # adapt_run_script(org_name)
-        # correct_run_script(org_name)
+        # Consolidate all department reports into a single file named "{organization}.txt"
+        all_reports = []
+        for dept, file_path in self.departments:
+            dept = dept.strip()
+            if file_path and os.path.exists(file_path):
+                with open(file_path, "r", encoding="utf-8") as f:
+                    report_text = f.read()
+            else:
+                # If no file was uploaded, use process_report to generate the report.
+                report_text = process_report(dept)
+            if report_text:
+                all_reports.append(f"===== {dept.upper()} REPORTS =====\n{report_text}\n")
+            else:
+                print(f"No report found for department {dept}.")
+        
+        if all_reports:
+            consolidated_report_path = os.path.join(report_dir, f"{org_name}.txt")
+            with open(consolidated_report_path, "w", encoding="utf-8") as final_file:
+                final_file.write("\n".join(all_reports))
+            print(f"Consolidated report saved at: {consolidated_report_path}")
+        else:
+            print("No department reports were processed.")
+        
+        # Run the simulation-related functions
+        generate_equation_script(org_name)
+        generate_organization_equation_class(org_name)
+        generate_organization_run(org_name)
+        correct_organization_script(org_name)
+        adapt_run_script(org_name)
+        correct_run_script(org_name)
         # plot_causal_loop_diagram(org_name)
         # correct_organization_loop(org_name)
-        
         run_organization_script(org_name)
         run_organization_loop(org_name)
         

@@ -33,6 +33,7 @@ Candidates receive messages, with different response rates:
 
 
 
+
 ===== INTER-CONTRAT REPORTS =====
 - Consultant in INTER-CONTRAT:
 Number of consultant in INTER-CONTRAT has the initial value of 17.\n
@@ -42,9 +43,10 @@ Consultant from the MISSION come back to INTER_CONTRAT consultants with the rate
 5% of the consultants in INTER_CONTRAT consultants resign.
 
 - Consultant in MISSION:
-Consultant in Mission has the initial value of 140.\n
+Consultant in MISSION has the initial value of 140.\n
 Consultant from the MISSION go out to INTER_CONTRAT consultants with the rate of "retour mission" which is equal to 1/140.\n
 The consultant come to MISSION from the INTER-CONTRAT consultant with the rate of "Départ en mission" which is computed from the Commerce department.
+
 
 
 ===== COMMERCE REPORTS =====
@@ -72,6 +74,7 @@ The remaing 67% are rejected.
 - Départ en mission 
 33% of Presentation clients are moved to "Départ en mission". 
 The rate of the consultant go out from INTER_CONTRAT consult and into MISSION, in the INTER_CONTRAT department, should be computed equal to the rate of "Départ en mission".
+
 
 
 

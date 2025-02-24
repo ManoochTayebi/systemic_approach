@@ -1,67 +1,66 @@
-class SibyloneModel:
-    def __init__(self):
-        self.variable_names = [
-            'Sourcing', 'Messaging', 'AKLIFE', 'KLIF', 'RDV1',
-            'RDV2', 'Proposal', 'Consultants_Inter_Contrat',
-            'Consultants_Mission', 'Stock_AO', 'Opportunites',
-            'Candidats_Positionnes', 'Presentation_Clients'
-        ]
-        
-        # RECRUTEMENT REPORTS
-        self.f_s = 60  # Sourcing rate
-        self.r_s = 0.1  # Non retenu
-        self.r_m = 0.9  # Message envoyé
-        self.r_nr = 0.8  # Pas de retour
-        self.r_ref = 0.1  # Rejeté
-        self.r_ak = 0.1  # Reponse accepté
-        self.r_akneg = 0.2  # KLIF negatif
-        self.r_k = 0.8  # KLIF positif
-        self.r_kneg = 0.6  # RDV1 rejected
-        self.r_r1 = 0.4  # RDV1 positif
-        self.r_r2neg = 0.1  # RDV2 negatif
-        self.r_r2 = 0.9  # RDV2 positif
-        self.r_r3neg = 0.5  # RDV3 negatif
-        self.r_p = 0.5  # Moves to Proposal
-        self.r_pref = 0.2  # Proposal rejected
-        self.r_c = 0.8  # Accepted
+def get_variable_names():
+    return [
+        'sourcing', 'messaging', 'aklife', 'klif', 'rdv1', 'rdv2',
+        'proposal', 'inter_contrat', 'mission', 'stock_ao',
+        'opportunities', 'candidats_positionnes', 'presentation_clients'
+    ]
 
-        # INTER-CONTRAT REPORTS
-        self.initial_inter_contrat_consultants = 17
-        self.initial_mission_consultants = 140
-        self.retour_mission_rate = 1/140
-        self.resignation_rate = 0.05
+def sibylone_model(state, t, parameters):
+    sourcing, messaging, aklife, klif, rdv1, rdv2, proposal, inter_contrat, mission, stock_ao, opportunities, candidats_positionnes, presentation_clients = state
 
-        # COMMERCE REPORTS
-        self.stock_ao_per_week = 13
-        self.selection_rate_stock_ao = 10/13
-        self.opportunites_per_week = 2.5
-        self.opportunites_selection_rate = 0.85
-        self.candidats_positionnes_presentation_rate = 0.3
-        self.presentation_clients_depart_mission_rate = 0.33
+    f_s, r_s, r_m, r_nr, r_ref, r_ak, r_akneg, r_k, r_kneg, r_r1, r_r2, r_r2neg, r_r3neg, r_p, r_pref, r_c, r_inter_contrat_out, r_mission_back, r_resign, f_ao, r_ao_sel, r_opp_gen, r_opp_to_cand, r_cand_pres, r_pres_dep = parameters
 
-    def get_variable_names(self):
-        return self.variable_names
+    d_sourcing_dt = f_s - r_s * sourcing - r_m * sourcing
+    d_messaging_dt = r_m * sourcing - r_nr * messaging - r_ref * messaging - r_ak * messaging
+    d_aklife_dt = r_ak * messaging - r_akneg * aklife - r_k * aklife
+    d_klif_dt = r_k * aklife - r_kneg * klif - r_r1 * klif
+    d_rdv1_dt = r_r1 * klif - r_r2neg * rdv1 - r_r2 * rdv1
+    d_rdv2_dt = r_r2 * rdv1 - r_r3neg * rdv2 - r_p * rdv2
+    d_proposal_dt = r_p * rdv2 - r_pref * proposal - r_c * proposal
+    d_inter_contrat_dt = r_c * proposal - r_inter_contrat_out * inter_contrat + r_mission_back * mission - r_resign * inter_contrat
+    d_mission_dt = r_inter_contrat_out * inter_contrat - r_mission_back * mission
 
-    def sibylone_process(self, t, y):
-        Sourcing, Messaging, AKLIFE, KLIF, RDV1, RDV2, Proposal, Consultants_Inter_Contrat, Consultants_Mission, Stock_AO, Opportunites, Candidats_Positionnes, Presentation_Clients = y
+    d_stock_ao_dt = f_ao - r_ao_sel * stock_ao
+    d_opportunities_dt = r_ao_sel * stock_ao + r_opp_gen - r_opp_to_cand * opportunities
+    d_candidats_positionnes_dt = r_opp_to_cand * opportunities - r_cand_pres * candidats_positionnes
+    d_presentation_clients_dt = r_cand_pres * candidats_positionnes - r_pres_dep * presentation_clients
 
-        dSourcing_dt = self.f_s - self.r_s * Sourcing - self.r_m * Sourcing
-        dMessaging_dt = self.r_m * Sourcing - self.r_nr * Messaging - self.r_ref * Messaging - self.r_ak * Messaging
-        dAKLIFE_dt = self.r_ak * Messaging - self.r_akneg * AKLIFE - self.r_k * AKLIFE
-        dKLIF_dt = self.r_k * AKLIFE - self.r_kneg * KLIF - self.r_r1 * KLIF
-        dRDV1_dt = self.r_r1 * KLIF - self.r_r2neg * RDV1 - self.r_r2 * RDV1
-        dRDV2_dt = self.r_r2 * RDV1 - self.r_r3neg * RDV2 - self.r_p * RDV2
-        dProposal_dt = self.r_p * RDV2 - self.r_pref * Proposal - self.r_c * Proposal
-        dConsultants_Inter_Contrat_dt = self.r_c * Proposal - self.resignation_rate * Consultants_Inter_Contrat + self.retour_mission_rate * Consultants_Mission - self.presentation_clients_depart_mission_rate * Presentation_Clients
-        dConsultants_Mission_dt = self.presentation_clients_depart_mission_rate * Presentation_Clients - self.retour_mission_rate * Consultants_Mission
-        dStock_AO_dt = self.stock_ao_per_week - self.selection_rate_stock_ao * Stock_AO
-        dOpportunites_dt = self.opportunites_per_week - self.opportunites_selection_rate * Opportunites
-        dCandidats_Positionnes_dt = self.opportunites_selection_rate * Opportunites - self.candidats_positionnes_presentation_rate * Candidats_Positionnes
-        dPresentation_Clients_dt = self.candidats_positionnes_presentation_rate * Candidats_Positionnes - self.presentation_clients_depart_mission_rate * Presentation_Clients
+    return [d_sourcing_dt, d_messaging_dt, d_aklife_dt, d_klif_dt, d_rdv1_dt, d_rdv2_dt, d_proposal_dt, d_inter_contrat_dt, d_mission_dt, d_stock_ao_dt, d_opportunities_dt, d_candidats_positionnes_dt, d_presentation_clients_dt]
 
-        return [
-            dSourcing_dt, dMessaging_dt, dAKLIFE_dt, dKLIF_dt,
-            dRDV1_dt, dRDV2_dt, dProposal_dt, dConsultants_Inter_Contrat_dt,
-            dConsultants_Mission_dt, dStock_AO_dt, dOpportunites_dt,
-            dCandidats_Positionnes_dt, dPresentation_Clients_dt
-        ]
+def main():
+    variable_names = get_variable_names()
+    parameters = [
+        10.0,  # f_s
+        0.1,   # r_s
+        0.2,   # r_m
+        0.05,  # r_nr
+        0.01,  # r_ref
+        0.03,  # r_ak
+        0.02,  # r_akneg
+        0.04,  # r_k
+        0.005, # r_kneg
+        0.06,  # r_r1
+        0.07,  # r_r2
+        0.008, # r_r2neg
+        0.009, # r_r3neg
+        0.08,  # r_p
+        0.01,  # r_pref
+        0.09,  # r_c
+        0.1,   # r_inter_contrat_out
+        0.11,  # r_mission_back
+        0.012, # r_resign
+        15.0,  # f_ao
+        0.13,  # r_ao_sel
+        20.0,  # r_opp_gen
+        0.14,  # r_opp_to_cand
+        0.15,  # r_cand_pres
+        0.016, # r_pres_dep
+    ]
+    state = [1.0] * len(variable_names)
+    t = 0
+
+    derivatives = sibylone_model(state, t, parameters)
+    print(derivatives)
+
+if __name__ == "__main__":
+    main()
