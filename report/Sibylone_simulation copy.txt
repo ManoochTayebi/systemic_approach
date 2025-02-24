@@ -1,0 +1,6 @@
+Simulation parameters:
+- Run the simulation  53 time units (weeks).\\
+
+Visualization parameters:
+- Plot the number of consultant in INTER_CONTRAT.\\
+- Plot the number of the consult in Mission.

@@ -19,6 +19,7 @@ r_c = 0.8  # Accepted
 
 # INTER-CONTRAT REPORTS
 initial_inter_contrat_consultants = 17
+initial_mission_consultants = 140
 retour_mission_rate = 1/140
 resignation_rate = 0.05
 

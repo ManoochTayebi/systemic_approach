@@ -1,10 +1,10 @@
 class SibyloneModel:
     def __init__(self):
         self.variable_names = [
-            "Sourcing", "Messaging", "AKLIFE", "KLIF", "RDV1",
-            "RDV2", "Proposal", "Consultants_Inter_Contrat",
-            "Consultants_Mission", "Stock_AO", "Opportunites",
-            "Candidats_Positionnes", "Presentation_Clients"
+            'Sourcing', 'Messaging', 'AKLIFE', 'KLIF', 'RDV1',
+            'RDV2', 'Proposal', 'Consultants_Inter_Contrat',
+            'Consultants_Mission', 'Stock_AO', 'Opportunites',
+            'Candidats_Positionnes', 'Presentation_Clients'
         ]
         
         # RECRUTEMENT REPORTS
@@ -27,6 +27,7 @@ class SibyloneModel:
 
         # INTER-CONTRAT REPORTS
         self.initial_inter_contrat_consultants = 17
+        self.initial_mission_consultants = 140
         self.retour_mission_rate = 1/140
         self.resignation_rate = 0.05
 

@@ -1,13 +1,12 @@
 import matplotlib.pyplot as plt
-from scipy.integrate import solve_ivp
 from Sibylone_equations_class import SibyloneModel
-import numpy as np
+from scipy.integrate import solve_ivp
 
 class PlotResults:
     def plot_results(self, sol, labels):
-        plt.figure(figsize=(10,6))
+        plt.figure(figsize=(10, 6))
         for i in range(len(sol.y)):
-            if labels[i] in ["Consultants_Inter_Contrat", "Consultants_Mission"]:
+            if labels[i] in ['Consultants_Inter_Contrat', 'Consultants_Mission']:
                 plt.plot(sol.t, sol.y[i], label=labels[i])
         plt.xlabel("Time (weeks)")
         plt.ylabel("Number of consultants")
@@ -18,19 +17,30 @@ class PlotResults:
 
 if __name__ == "__main__":
     model = SibyloneModel()
-
-    # Initial conditions for the variables
-    initial_conditions = [0] * len(model.get_variable_names())
-
-    # INTER-CONTRAT REPORTS
-    initial_conditions[model.get_variable_names().index("Consultants_Inter_Contrat")] = model.initial_inter_contrat_consultants
-
+    
+    # Initial conditions
+    initial_conditions = [
+        0,  # Sourcing
+        0,  # Messaging
+        0,  # AKLIFE
+        0,  # KLIF
+        0,  # RDV1
+        0,  # RDV2
+        0,  # Proposal
+        model.initial_inter_contrat_consultants,  # Consultants_Inter_Contrat
+        model.initial_mission_consultants,  # Consultants_Mission
+        0,  # Stock_AO
+        0,  # Opportunites
+        0,  # Candidats_Positionnes
+        0   # Presentation_Clients
+    ]
+    
     # Time points
-    t = np.linspace(0, 52, 53) # Ensure that the start and end time are included in the array
+    t_span = (0, 53)
+    t_eval = [i for i in range(54)]
+    
+    solution = solve_ivp(model.sibylone_process, t_span, initial_conditions, t_eval=t_eval, method='RK45')
+    labels = model.get_variable_names()  
 
-    # Solve ODE
-    sol = solve_ivp(model.sibylone_process, (t[0], t[-1]), initial_conditions, t_eval=t)
-
-    # Plot results
-    plot_results = PlotResults()
-    plot_results.plot_results(sol, model.get_variable_names())
+    plotter = PlotResults()
+    plotter.plot_results(solution, labels)

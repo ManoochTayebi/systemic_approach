@@ -525,7 +525,7 @@ def main():
     # else:
     #     print("No reports were processed.")
 
-    generate_equation_script(organization)
+    # generate_equation_script(organization)
     generate_organization_equation_class(organization)
     generate_organization_run(organization)
     correct_organization_script(organization)
@@ -534,7 +534,7 @@ def main():
     # plot_causal_loop_diagram(organization)
     # correct_organization_loop(organization)
     run_organization_script(organization)
-    # run_organization_loop(organization)
+    run_organization_loop(organization)
 
 if __name__ == "__main__":
     main()
