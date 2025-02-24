@@ -1,21 +1,16 @@
-################################################################################
-###                                                                          ###
-### Created by Mahdi Manoochertayebi 2025-2026                               ###
-###                                                                          ###
-################################################################################
-
-import numpy as np
-from scipy.integrate import odeint
 import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
 from Sibylone_equations_class import SibyloneModel
+import numpy as np
 
 class PlotResults:
     def plot_results(self, sol, labels):
         plt.figure(figsize=(10,6))
-        for i in range(len(sol)):
-            plt.plot(np.arange(0, len(sol[0]), 1), sol[:,i], label=labels[i])
+        for i in range(len(sol.y)):
+            if labels[i] in ["Consultants_Inter_Contrat", "Consultants_Mission"]:
+                plt.plot(sol.t, sol.y[i], label=labels[i])
         plt.xlabel("Time (weeks)")
-        plt.ylabel("Number of candidates")
+        plt.ylabel("Number of consultants")
         plt.legend()
         plt.title("Sibylone Process Simulation")
         plt.grid()
@@ -23,14 +18,19 @@ class PlotResults:
 
 if __name__ == "__main__":
     model = SibyloneModel()
-    t = np.linspace(0, 52, 53)  # Simulate for 1 year (52 weeks)
 
-    solution = model.run_simulation(t)
+    # Initial conditions for the variables
+    initial_conditions = [0] * len(model.get_variable_names())
 
-    def extract_variable_labels():
-        return [attr for attr in dir(model) if not attr.startswith("__") and not callable(getattr(model, attr))]
+    # INTER-CONTRAT REPORTS
+    initial_conditions[model.get_variable_names().index("Consultants_Inter_Contrat")] = model.initial_inter_contrat_consultants
 
-    labels = extract_variable_labels()
+    # Time points
+    t = np.linspace(0, 52, 53) # Ensure that the start and end time are included in the array
 
-    plotter = PlotResults()
-    plotter.plot_results(solution, labels=labels)
+    # Solve ODE
+    sol = solve_ivp(model.sibylone_process, (t[0], t[-1]), initial_conditions, t_eval=t)
+
+    # Plot results
+    plot_results = PlotResults()
+    plot_results.plot_results(sol, model.get_variable_names())

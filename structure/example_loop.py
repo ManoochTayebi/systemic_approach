@@ -6,6 +6,7 @@
 
 import matplotlib.pyplot as plt
 import networkx as nx
+from example_equations_class import RecruitmentModel
 
 class PlotCausalLoop:
     def plot_causal_loop_diagram(self, model):
@@ -42,23 +43,9 @@ class PlotCausalLoop:
 
         # Define layout (aligned positioning)
         pos = {
-            "Sourcing (f_s)": (-1, 2),
-            "Sourcé": (0, 2),
-            "Messaged": (1, 2),
-            "AKLIFé": (2, 2),
-            "KLIF": (3, 2),
-            "RDV1": (4, 2),
-            "RDV2": (5, 2),
-            "Proposal": (6, 2),
-            "Consultants": (7, 2),
-            "Non retenu": (0, 1),
-            "Pas de retour": (1, 1),
-            "Rejeté": (1, 0),
-            "AKLIF négatif": (2, 1),
-            "RDV1 rejeté": (3, 1),
-            "RDV2 négatif": (4, 1),
-            "RDV3 négatif": (5, 1),
-            "Proposition rejetée": (6, 1),
+            "Sourcing (f_s)": (-1, 2), "Sourcé": (0, 2), "Messaged": (1, 2), "AKLIFé": (2, 2), "KLIF": (3, 2), "RDV1": (4, 2), 
+            "RDV2": (5, 2), "Proposal": (6, 2), "Consultants": (7, 2), "Non retenu": (0, 1), "Pas de retour": (1, 1), "Rejeté": (1, 0), 
+            "AKLIF négatif": (2, 1), "RDV1 rejeté": (3, 1), "RDV2 négatif": (4, 1), "RDV3 négatif": (5, 1), "Proposition rejetée": (6, 1)
         }
 
         plt.figure(figsize=(16, 8))
@@ -70,3 +57,8 @@ class PlotCausalLoop:
 
         plt.title("Causal Loop Diagram of Recruitment Process (with Sourcing f_s)")
         plt.show()
+
+if __name__ == "__main__":
+    model = RecruitmentModel()
+    plotter = PlotCausalLoop()
+    plotter.plot_causal_loop_diagram(model)

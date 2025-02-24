@@ -21,7 +21,7 @@ The remaing 67% are rejected.
 
 - Départ en mission 
 33% of Presentation clients are moved to "Départ en mission". 
-The rate of the consultant go from INTER_CONTRAT consult to MISSION in the INTER_CONTRAT department, should be computed equal to the rate of "Départ en mission".
+The rate of the consultant go out from INTER_CONTRAT consult and into MISSION, in the INTER_CONTRAT department, should be computed equal to the rate of "Départ en mission".
 
 
 

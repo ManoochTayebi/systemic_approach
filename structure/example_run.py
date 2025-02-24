@@ -21,15 +21,10 @@ class PlotResults:
 
 if __name__ == "__main__":
     model = RecruitmentModel()
+
     solution = model.run_simulation()
+    labels = model.get_variable_names()  # Get variable names separately
     
-
-    def extract_variable_labels():
-        model = RecruitmentModel()
-        return [attr for attr in dir(model) if not attr.startswith("__") and not callable(getattr(model, attr))]
-
-    labels = extract_variable_labels()
-
     plotter = PlotResults()
     plotter.plot_results(solution, labels=labels)
     
