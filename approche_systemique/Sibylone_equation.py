@@ -1,103 +1,88 @@
-### Sibylone Process Model
-
-#### Variable Definitions
-
-- `f_s`: Sourcing rate
-- `r_s`: Non-retention rate from Sourcing
-- `r_m`: Messaging rate from Sourcing
-- `r_nr`: No response rate from Messaging
-- `r_ref`: Rejection rate from Messaging
-- `r_ak`: Acceptance rate to AKLIFé from Messaging
-- `r_akneg`: Failure rate in AKLIFé
-- `r_k`: Success rate in AKLIFé moving to KLIF
-- `r_kneg`: Rejection rate in KLIF
-- `r_r1`: Positive rate from KLIF to First Interview (RDV1)
-- `r_r2neg`: Rejection rate from RDV1
-- `r_r2`: Positive rate from RDV1 to Second Interview (RDV2)
-- `r_r3neg`: Rejection rate from RDV2
-- `r_p`: Proposal rate from RDV2
-- `r_pref`: Proposal rejection rate
-- `r_c`: Proposal acceptance rate
-
-#### Initial Values and Rates
-
 ```python
-f_s = 60  # Sourcing rate
-r_s = 0.1  # Non-retention rate from Sourcing
-r_m = 0.9  # Messaging rate from Sourcing
-r_nr = 0.8  # No response rate from Messaging
-r_ref = 0.1  # Rejection rate from Messaging
-r_ak = 0.1  # Acceptance rate to AKLIFé from Messaging
-r_akneg = 0.2  # Failure rate in AKLIFé
-r_k = 0.8  # Success rate in AKLIFé moving to KLIF
-r_kneg = 0.6  # Rejection rate in KLIF
-r_r1 = 0.4  # Positive rate from KLIF to First Interview (RDV1)
-r_r2neg = 0.1  # Rejection rate from RDV1
-r_r2 = 0.9  # Positive rate from RDV1 to Second Interview (RDV2)
-r_r3neg = 0.5  # Rejection rate from RDV2
-r_p = 0.5  # Proposal rate from RDV2
-r_pref = 0.2  # Proposal rejection rate
-r_c = 0.8  # Proposal acceptance rate
+# Import necessary libraries
+import numpy as np
+from scipy.integrate import odeint
 
-# Stock AO (Appele d'Offre) rates
-stock_ao_rate = 13  # Appeles d'offre per week
-selection_rate = 10 / 13  # Selection rate for Opportunités
+# Define model parameters and state variables
+sourcing_input_flow_rate = 84
+messaging_transition_rate = 55
+rdv1_transition_rate = 9.8
+rdv2_transition_rate = 5.72
+rdv3_transition_rate = 3.21
+proposition_transition_rate = 1.88
+hiring_rate = 1.78
+initial_inter_contrat_consultants = 17
+initial_mission_consultants = 172
+retour_mission_rate = 6.8
+resignation_rate = 0.8
+opportunities_creation_rate = 33
+presentation_clients_transition_rate = 13.5
+depart_en_mission_transition_rate = 4.5
 
-# Opportunités rates
-opportunities_per_week = 2.5  # Additional opportunities generated per week
-opportunity_success_rate = 0.85  # Rate moving to Candidats positionnés
+# Define state variables
+state_variables = ['sourcing_candidates', 'messaging_candidates', 'rdv1_candidates', 
+                   'rdv2_candidates', 'rdv3_candidates', 'proposition_candidates', 
+                   'inter_contrat_consultants', 'mission_consultants', 'opportunities', 
+                   'presentation_clients', 'depart_en_mission']
 
-# Candidats positionnés rates
-presentation_client_rate = 0.3  # Rate presented to clients
+# Define initial conditions
+initial_conditions = {
+    'sourcing_candidates': 0,
+    'messaging_candidates': 0,
+    'rdv1_candidates': 0,
+    'rdv2_candidates': 0,
+    'rdv3_candidates': 0,
+    'proposition_candidates': 0,
+    'inter_contrat_consultants': initial_inter_contrat_consultants,
+    'mission_consultants': initial_mission_consultants,
+    'opportunities': 0,
+    'presentation_clients': 0,
+    'depart_en_mission': 0
+}
 
-# Presentation clients rates
-depart_en_mission_rate = 0.33  # Rate of Départ en mission
+# Define differential equations for each state variable
+def model(state, time):
+    sourcing_candidates = state[0]
+    messaging_candidates = state[1]
+    rdv1_candidates = state[2]
+    rdv2_candidates = state[3]
+    rdv3_candidates = state[4]
+    proposition_candidates = state[5]
+    inter_contrat_consultants = state[6]
+    mission_consultants = state[7]
+    opportunities = state[8]
+    presentation_clients = state[9]
+    depart_en_mission = state[10]
 
-# INTER-CONTRAT and MISSION rates
-inter_contrat_initial = 17  # Initial number of consultants in INTER-CONTRAT
-mission_initial = 3  # Initial number of consultants in MISSION
-retention_inter_contrat_rate = 0.05  # Rate of retention in INTER-CONTRAT
-```
+    d_sourcing_candidates_dt = sourcing_input_flow_rate - messaging_transition_rate
+    d_messaging_candidates_dt = messaging_transition_rate - rdv1_transition_rate
+    d_rdv1_candidates_dt = rdv1_transition_rate - rdv2_transition_rate
+    d_rdv2_candidates_dt = rdv2_transition_rate - rdv3_transition_rate
+    d_rdv3_candidates_dt = rdv3_transition_rate - proposition_transition_rate
+    d_proposition_candidates_dt = proposition_transition_rate - hiring_rate
+    d_inter_contrat_consultants_dt = hiring_rate + retour_mission_rate - depart_en_mission_transition_rate - resignation_rate
+    d_mission_consultants_dt = depart_en_mission_transition_rate - retour_mission_rate
+    d_opportunities_dt = opportunities_creation_rate - presentation_clients_transition_rate
+    d_presentation_clients_dt = presentation_clients_transition_rate - depart_en_mission_transition_rate
+    d_depart_en_mission_dt = depart_en_mission_transition_rate
 
-#### Differential Equations
+    return [d_sourcing_candidates_dt, d_messaging_candidates_dt, d_rdv1_candidates_dt, 
+            d_rdv2_candidates_dt, d_rdv3_candidates_dt, d_proposition_candidates_dt, 
+            d_inter_contrat_consultants_dt, d_mission_consultants_dt, d_opportunities_dt, 
+            d_presentation_clients_dt, d_depart_en_mission_dt]
 
-```python
-# Sourcing (S)
-dS_dt = f_s - r_s * S - r_m * S
+# Define time points
+time_points = np.linspace(0, 100)
 
-# Messaging (M)
-dM_dt = r_m * S - r_nr * M - r_ref * M - r_ak * M
+# Solve ODE
+state0 = [initial_conditions['sourcing_candidates'], initial_conditions['messaging_candidates'], 
+          initial_conditions['rdv1_candidates'], initial_conditions['rdv2_candidates'], 
+          initial_conditions['rdv3_candidates'], initial_conditions['proposition_candidates'], 
+          initial_conditions['inter_contrat_consultants'], initial_conditions['mission_consultants'], 
+          initial_conditions['opportunities'], initial_conditions['presentation_clients'], 
+          initial_conditions['depart_en_mission']]
+state = odeint(model, state0, time_points)
 
-# AKLIFé (A)
-dA_dt = r_ak * M - r_akneg * A - r_k * A
-
-# KLIF (K)
-dK_dt = r_k * A - r_kneg * K - r_r1 * K
-
-# First Interview (RDV1) (R1)
-dR1_dt = r_r1 * K - r_r2neg * R1 - r_r2 * R1
-
-# Second Interview (RDV2) (R2)
-dR2_dt = r_r2 * R1 - r_r3neg * R2 - r_p * R2
-
-# Proposal (P)
-dP_dt = r_p * R2 - r_pref * P - r_c * P
-
-# INTER-CONTRAT (IC)
-dIC_dt = r_c * P - depart_en_mission_rate * IC + retention_inter_contrat_rate * M
-
-# MISSION (MIS)
-dMIS_dt = depart_en_mission_rate * IC - retention_inter_contrat_rate * MIS
-
-# Stock AO
-dStockAO_dt = stock_ao_rate - selection_rate * stock_ao_rate
-
-# Opportunités
-dOpportunities_dt = selection_rate * stock_ao_rate + opportunities_per_week - opportunity_success_rate * opportunities
-
-# Candidats positionnés
-dCandidatsPositionnes_dt = opportunity_success_rate * opportunities - presentation_client_rate * candidats_positionnes
-
-# Presentation clients
-dPresentationClients_dt = presentation_client_rate * candidats_positionnes - depart_en_mission_rate * presentation_clients
+# Print results
+print(state)
 ```

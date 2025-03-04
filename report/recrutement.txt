@@ -1,32 +1,22 @@
 
-- Sourcing (S):
-Candidates are sourced at a rate of 60 per time unit.
-10% are not retained (r_s = 0.1).
-90% move to the messaging phase (r_m = 0.9).
+All the flows are absolute and there is no rate.
 
-- Messaging (M):
-Candidates receive messages, with different response rates:
-80% do not respond (r_nr = 0.8).
-10% are rejected (r_ref = 0.1).
-10% accept and move to AKLIFé (r_ak = 0.1).
+- Sourcing:
+Candidates are sourced at a rate of 84 per time unit (weeks) as an input flow.
+Candidates are moving to Messaging with the absolute rate of 55 per time unit.
 
-- AKLIFé:
-20% fail the KLIF (r_akneg = 0.2).
-80% pass and proceed to KLIF (r_k = 0.8).
+- Messaging:
+Candidates are moving to RDV1 with the absolute value of 9.8 per time unit.
 
-- KLIF:
-60% are rejected at this stage (r_kneg = 0.6).
-40% move to the first interview (r_r1 = 0.4).
-
-- First Interview (RDV1):
-10% get rejected (r_r2neg = 0.1).
-90% proceed to the second interview (r_r2 = 0.9).
+- First interview (RDV1):
+Candidates are moving to RDV2 with the absolute value of 5.72 per time unit.
 
 - Second Interview (RDV2):
-50% are rejected (r_r3neg = 0.5).
-50% receive a proposal (r_p = 0.5).
+Candidates are moving to RDV3 with the absolute value of 3.21 per time unit.
 
-- Proposal Sent (P):
-20% reject the proposal (r_pref = 0.2).
-80% accept (r_c = 0.8) and become consultants (are hired) and enter the INTER-CONTRAT department.
+- Third interview (RDV3):
+Candidates are moving to Proposition with the absolute value of 1.88 per time unit.
+
+- Proposition:
+Candidates become consultants (are hired) and enter the INTER-CONTRAT department with the absolute eate of 1.78.
 

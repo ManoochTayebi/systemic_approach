@@ -1,89 +1,88 @@
 import matplotlib.pyplot as plt
-from Sibylone_equations_class import SibyloneModel
 import numpy as np
-from scipy.integrate import odeint
+from scipy.integrate import solve_ivp
+
+class SibModel:
+    def __init__(self):
+        self.sourcing_input_flow_rate = 84
+        self.messaging_transition_rate = 55
+        self.rdv1_transition_rate = 9.8
+        self.rdv2_transition_rate = 5.72
+        self.rdv3_transition_rate = 3.21
+        self.proposition_transition_rate = 1.88
+        self.hiring_rate = 1.78
+        self.initial_inter_contrat_consultants = 17
+        self.initial_mission_consultants = 172
+        self.retour_mission_rate = 6.8
+        self.resignation_rate = 0.8
+        self.opportunities_creation_rate = 33
+        self.presentation_clients_transition_rate = 13.5
+        self.depart_en_mission_transition_rate = 4.5
+
+    def recruitment_model(self, t, y):
+        sourcing_candidates = y[0]
+        messaging_candidates = y[1]
+        rdv1_candidates = y[2]
+        rdv2_candidates = y[3]
+        rdv3_candidates = y[4]
+        proposition_candidates = y[5]
+        inter_contrat_consultants = y[6]
+        mission_consultants = y[7]
+        opportunities = y[8]
+        presentation_clients = y[9]
+        depart_en_mission = y[10]
+
+        d_sourcing_candidates_dt = self.sourcing_input_flow_rate - self.messaging_transition_rate * sourcing_candidates
+        d_messaging_candidates_dt = self.messaging_transition_rate * sourcing_candidates - self.rdv1_transition_rate * messaging_candidates
+        d_rdv1_candidates_dt = self.rdv1_transition_rate * messaging_candidates - self.rdv2_transition_rate * rdv1_candidates
+        d_rdv2_candidates_dt = self.rdv2_transition_rate * rdv1_candidates - self.rdv3_transition_rate * rdv2_candidates
+        d_rdv3_candidates_dt = self.rdv3_transition_rate * rdv2_candidates - self.proposition_transition_rate * rdv3_candidates
+        d_proposition_candidates_dt = self.proposition_transition_rate * rdv3_candidates - self.hiring_rate * proposition_candidates
+        d_inter_contrat_consultants_dt = self.hiring_rate * proposition_candidates + self.retour_mission_rate * mission_consultants - self.depart_en_mission_transition_rate * inter_contrat_consultants - self.resignation_rate * inter_contrat_consultants
+        d_mission_consultants_dt = self.depart_en_mission_transition_rate * inter_contrat_consultants - self.retour_mission_rate * mission_consultants
+        d_opportunities_dt = self.opportunities_creation_rate - self.presentation_clients_transition_rate * opportunities
+        d_presentation_clients_dt = self.presentation_clients_transition_rate * opportunities - self.depart_en_mission_transition_rate * presentation_clients
+        d_depart_en_mission_dt = self.depart_en_mission_transition_rate * presentation_clients
+
+        return [d_sourcing_candidates_dt, d_messaging_candidates_dt, d_rdv1_candidates_dt,
+                d_rdv2_candidates_dt, d_rdv3_candidates_dt, d_proposition_candidates_dt,
+                d_inter_contrat_consultants_dt, d_mission_consultants_dt, d_opportunities_dt,
+                d_presentation_clients_dt, d_depart_en_mission_dt]
+
+    def get_initial_conditions(self):
+        return [0, 0, 0, 0, 0, 0, self.initial_inter_contrat_consultants,
+                self.initial_mission_consultants, 0, 0, 0]
+
+    def get_state_variable_names(self):
+        return ['sourcing_candidates', 'messaging_candidates', 'rdv1_candidates',
+                'rdv2_candidates', 'rdv3_candidates', 'proposition_candidates',
+                'inter_contrat_consultants', 'mission_consultants', 'opportunities',
+                'presentation_clients', 'depart_en_mission']
+
+    def run_simulation(self, t_span, t_eval):
+        sol = solve_ivp(self.recruitment_model, t_span, self.get_initial_conditions(), t_eval=t_eval)
+        return sol
 
 class PlotResults:
     def plot_results(self, sol, labels):
+        variable_names = ['inter_contrat_consultants', 'mission_consultants']
+        indices = [labels.index(name) for name in variable_names]
+
         plt.figure(figsize=(10, 6))
-        for i in range(len(sol)):
-            if labels[i] in ['sourcing', 'inter_contrat']:
-                plt.plot(sol[:, i], label=labels[i])
-        plt.xlabel("Time (weeks)")
-        plt.ylabel("Number of candidates")
+        for i in indices:
+            plt.plot(sol.t, sol.y[i], label=variable_names[indices.index(i)])
+
+        plt.xlabel('Time')
+        plt.ylabel('Value')
+        plt.title('Simulation Results')
         plt.legend()
-        plt.title("Sibylone Process Simulation")
-        plt.grid()
         plt.show()
 
-class SibyloneModel:
-    def __init__(self):
-        self.variable_names = [
-            'sourcing', 'messaging', 'aklife', 'klif', 'rdv1', 'rdv2',
-            'proposal', 'inter_contrat', 'mission', 'stock_ao',
-            'opportunities', 'candidats_positionnes', 'presentation_clients'
-        ]
-        self.parameters = [
-            10.0,  # f_s
-            0.1,   # r_s
-            0.2,   # r_m
-            0.05,  # r_nr
-            0.01,  # r_ref
-            0.03,  # r_ak
-            0.02,  # r_akneg
-            0.04,  # r_k
-            0.005, # r_kneg
-            0.06,  # r_r1
-            0.07,  # r_r2
-            0.008, # r_r2neg
-            0.009, # r_r3neg
-            0.08,  # r_p
-            0.01,  # r_pref
-            0.09,  # r_c
-            0.1,   # r_inter_contrat_out
-            0.11,  # r_mission_back
-            0.012, # r_resign
-            15.0,  # f_ao
-            0.13,  # r_ao_sel
-            20.0,  # r_opp_gen
-            0.14,  # r_opp_to_cand
-            0.15,  # r_cand_pres
-            0.016, # r_pres_dep
-        ]
-
-    def sibylone_model(self, state, t):
-        sourcing, messaging, aklife, klif, rdv1, rdv2, proposal, inter_contrat, mission, stock_ao, opportunities, candidats_positionnes, presentation_clients = state
-
-        f_s, r_s, r_m, r_nr, r_ref, r_ak, r_akneg, r_k, r_kneg, r_r1, r_r2, r_r2neg, r_r3neg, r_p, r_pref, r_c, r_inter_contrat_out, r_mission_back, r_resign, f_ao, r_ao_sel, r_opp_gen, r_opp_to_cand, r_cand_pres, r_pres_dep = self.parameters
-
-        d_sourcing_dt = f_s - r_s * sourcing - r_m * sourcing
-        d_messaging_dt = r_m * sourcing - r_nr * messaging - r_ref * messaging
-        d_aklife_dt = r_ak * messaging - r_akneg * aklife
-        d_klif_dt = r_k * aklife - r_kneg * klif
-        d_rdv1_dt = r_r1 * klif - r_r2 * rdv1
-        d_rdv2_dt = r_r2 * rdv1 - r_r2neg * rdv2
-        d_proposal_dt = r_p * rdv2 - r_pref * proposal
-        d_inter_contrat_dt = r_c * proposal - r_inter_contrat_out * inter_contrat
-        d_mission_dt = r_inter_contrat_out * inter_contrat - r_mission_back * mission
-        d_stock_ao_dt = f_ao - r_ao_sel * stock_ao
-        d_opportunities_dt = r_opp_gen - r_opp_to_cand * opportunities
-        d_candidats_positionnes_dt = r_opp_to_cand * opportunities - r_cand_pres * candidats_positionnes
-        d_presentation_clients_dt = r_cand_pres * candidats_positionnes - r_pres_dep * presentation_clients
-
-        return [d_sourcing_dt, d_messaging_dt, d_aklife_dt, d_klif_dt, d_rdv1_dt, d_rdv2_dt, 
-                d_proposal_dt, d_inter_contrat_dt, d_mission_dt, d_stock_ao_dt, 
-                d_opportunities_dt, d_candidats_positionnes_dt, d_presentation_clients_dt]
-
-    def run_simulation(self):
-        t = np.linspace(0, 100)
-        state0 = [1.0] * len(self.variable_names)
-        sol = odeint(self.sibylone_model, state0, t)
-
-        return sol
-
 if __name__ == "__main__":
-    model = SibyloneModel()
-    sol = model.run_simulation()
+    model = SibModel()
+    t_span = (0, 10)
+    t_eval = np.linspace(0, 10, 100)
 
+    sol = model.run_simulation(t_span, t_eval)
     plot_results = PlotResults()
-    plot_results.plot_results(sol, model.variable_names)
+    plot_results.plot_results(sol, model.get_state_variable_names())

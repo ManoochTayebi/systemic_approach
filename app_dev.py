@@ -161,12 +161,12 @@ class OrganizationApp(QMainWindow):
             print("No department reports were processed.")
         
         # Run the simulation-related functions
-        generate_equation_script(org_name)
-        generate_organization_equation_class(org_name)
-        generate_organization_run(org_name)
-        correct_organization_script(org_name)
-        adapt_run_script(org_name)
-        correct_run_script(org_name)
+        # generate_equation_script(org_name)
+        # generate_organization_equation_class(org_name)
+        # generate_organization_run(org_name)
+        # correct_organization_script(org_name)
+        # adapt_run_script(org_name)
+        # correct_run_script(org_name)
         # plot_causal_loop_diagram(org_name)
         # correct_organization_loop(org_name)
         run_organization_script(org_name)

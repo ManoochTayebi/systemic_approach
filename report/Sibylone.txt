@@ -1,79 +1,61 @@
 ===== RECRUTEMENT REPORTS =====
 
-- Sourcing (S):
-Candidates are sourced at a rate of 60 per time unit.
-10% are not retained (r_s = 0.1).
-90% move to the messaging phase (r_m = 0.9).
+All the flows are absolute and there is no rate.
 
-- Messaging (M):
-Candidates receive messages, with different response rates:
-80% do not respond (r_nr = 0.8).
-10% are rejected (r_ref = 0.1).
-10% accept and move to AKLIFé (r_ak = 0.1).
+- Sourcing:
+Candidates are sourced at a rate of 84 per time unit (weeks) as an input flow.
+Candidates are moving to Messaging with the absolute rate of 55 per time unit.
 
-- AKLIFé:
-20% fail the KLIF (r_akneg = 0.2).
-80% pass and proceed to KLIF (r_k = 0.8).
+- Messaging:
+Candidates are moving to RDV1 with the absolute value of 9.8 per time unit.
 
-- KLIF:
-60% are rejected at this stage (r_kneg = 0.6).
-40% move to the first interview (r_r1 = 0.4).
-
-- First Interview (RDV1):
-10% get rejected (r_r2neg = 0.1).
-90% proceed to the second interview (r_r2 = 0.9).
+- First interview (RDV1):
+Candidates are moving to RDV2 with the absolute value of 5.72 per time unit.
 
 - Second Interview (RDV2):
-50% are rejected (r_r3neg = 0.5).
-50% receive a proposal (r_p = 0.5).
+Candidates are moving to RDV3 with the absolute value of 3.21 per time unit.
 
-- Proposal Sent (P):
-20% reject the proposal (r_pref = 0.2).
-80% accept (r_c = 0.8) and become consultants (are hired) and enter the INTER-CONTRAT department.
+- Third interview (RDV3):
+Candidates are moving to Proposition with the absolute value of 1.88 per time unit.
+
+- Proposition:
+Candidates become consultants (are hired) and enter the INTER-CONTRAT department with the absolute eate of 1.78.
+
 
 
 
 ===== INTER-CONTRAT REPORTS =====
+All the flows are absolute and there is no rate.
+
 - Consultant in INTER-CONTRAT:
 Number of consultant in INTER-CONTRAT has the initial value of 17.\n
 The consultant who are hired in the Recruitement department, enteres the INTER_CONTRAT consultant.\n
-Consultants go out from INTER-CONTRAT to MISSION, with the rate of "Départ en mission" which is computed from the Commerce department.\n
-Consultant from the MISSION come back to INTER_CONTRAT consultants with the rate of "retour mission" which is equal to 1/140.\n
-5% of the consultants in INTER_CONTRAT consultants resign.
+The flow value going out from INTER_CONTRAT consult and into MISSION, in the INTER_CONTRAT department, should be equal to the absolute value of "Départ en mission", from the Commerce department.
+Consultants in MISSION come back to consultants in INTER_CONTRAT with the flow value "retour mission" which has the absolute value of 6.8 per time unit.
+consultants in INTER_CONTRAT consultants resign with the absoute value of 0.8 time unit.
+
 
 - Consultant in MISSION:
-Consultant in Mission has the initial value of 140.\n
-Consultant from the MISSION go out to INTER_CONTRAT consultants with the rate of "retour mission" which is equal to 1/140.\n
-The consultant come to MISSION from the INTER-CONTRAT consultant with the rate of "Départ en mission" which is computed from the Commerce department.
+Consultant in Mission has the initial value of 172.\n
+Consultant from the MISSION go out to INTER_CONTRAT consultants with the flow of "retour mission" which has the absolute value of 6.8.\n
+The consultant come to MISSION from the INTER-CONTRAT consultant with the absolute flow value of "Départ en mission" which is equal to "Départ en mission" of the Commerce department.
+
 
 
 ===== COMMERCE REPORTS =====
 
-This department find missions for the consultant and the number of the consultants who go to mission is equal to the number of missions proposed by this department.
-- Stock AO (appele d'offre):
-13 appele d'offre per week is stoked in Stock AO.
-10 out of 13 appele d'offre are selectioned and moved to the next step which is Opportunités.
-And the remaing (1 - 10/13) are not remained.
+All the flows are absolute and there is no rate.
 
-- Opportunités
-One flows enter Opportunités from Stock AO.
-In addition to the opportinities coming from apple d'offre, another source of 2.5 opportinities per week are generated and entered Opportunités.
-85% of the Opportunités are moved to Candidats positionnés and the rest go out as Opportunités perdues.
+- Opportinities
+Opportinities are created with the absolute value of 33 per time unit (week).
+Opportinities move to "Presentation clients" with the absolute value of 13.5 per time unit.
 
-- Candidats positionnés
-30% of Candidats positionnés go to the next step and presented to the clients.
-The remaining 70% of the Candidates positionnés are ignored.
 
 - Presentation clients
-33% of Presentation clients move to Départ en mission.
-The remaing 67% are rejected.
+Opportinities move to Départ en mission with the absolute value of 4.5 per time unit (week).
 
 
-- Départ en mission 
-33% of Presentation clients are moved to "Départ en mission". 
-The rate of the consultant go out from INTER_CONTRAT consult and into MISSION, in the INTER_CONTRAT department, should be computed equal to the rate of "Départ en mission".
-
-
-
+- Départ en mission
+The flow value of consultants go out from INTER_CONTRAT consult and into MISSION, in the INTER_CONTRAT department, should be equal to the absolute value of "Départ en mission".
 
 

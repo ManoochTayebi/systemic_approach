@@ -1,6 +1,6 @@
 Simulation parameters:
-- Run the simulation for 90 time units (weeks)
+- Run the simulation for 30 time units (weeks)
 
 Visualization parameters:
-- Plot the number of (Sourcing).
+- Plot the number of (Constultant in Inter-contract).
 - Plot the number of (Consultant in Mission).

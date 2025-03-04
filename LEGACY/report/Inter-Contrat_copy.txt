@@ -1,0 +1,11 @@
+- Consultant in INTER-CONTRAT:
+Number of consultant in INTER-CONTRAT has the initial value of 17.\n
+The consultant who are hired in the Recruitement department, enteres the INTER_CONTRAT consultant.\n
+Consultants go out from INTER-CONTRAT to MISSION, with the rate of "Départ en mission" which is computed from the Commerce department.\n
+Consultant from the MISSION come back to INTER_CONTRAT consultants with the rate of "retour mission" which is equal to 1/140.\n
+5% of the consultants in INTER_CONTRAT consultants resign.
+
+- Consultant in MISSION:
+Consultant in Mission has the initial value of 140.\n
+Consultant from the MISSION go out to INTER_CONTRAT consultants with the rate of "retour mission" which is equal to 1/140.\n
+The consultant come to MISSION from the INTER-CONTRAT consultant with the rate of "Départ en mission" which is computed from the Commerce department.

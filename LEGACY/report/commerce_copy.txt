@@ -1,0 +1,28 @@
+
+This department find missions for the consultant and the number of the consultants who go to mission is equal to the number of missions proposed by this department.
+- Stock AO (appele d'offre):
+13 appele d'offre per week is stoked in Stock AO.
+10 out of 13 appele d'offre are selectioned and moved to the next step which is Opportunités.
+And the remaing (1 - 10/13) are not remained.
+
+- Opportunités
+One flows enter Opportunités from Stock AO.
+In addition to the opportinities coming from apple d'offre, another source of 2.5 opportinities per week are generated and entered Opportunités.
+85% of the Opportunités are moved to Candidats positionnés and the rest go out as Opportunités perdues.
+
+- Candidats positionnés
+30% of Candidats positionnés go to the next step and presented to the clients.
+The remaining 70% of the Candidates positionnés are ignored.
+
+- Presentation clients
+33% of Presentation clients move to Départ en mission.
+The remaing 67% are rejected.
+
+
+- Départ en mission 
+33% of Presentation clients are moved to "Départ en mission". 
+The rate of the consultant go out from INTER_CONTRAT consult and into MISSION, in the INTER_CONTRAT department, should be computed equal to the rate of "Départ en mission".
+
+
+
+
